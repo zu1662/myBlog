@@ -1,0 +1,122 @@
+<!doctype html>
+<html class="no-js">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>班级说说</title>
+
+    <link rel="stylesheet" href="/css/amazeui.css">
+    <link rel="stylesheet" href="/css/public.css">
+
+
+    <style>
+        #success,#fail{
+            display: none;
+        }
+    </style>
+
+</head>
+
+<body>
+        <% include header.ejs %>
+
+
+    <form class="am-form am-container">
+        <legend>用户信息修改</legend>
+        <!-- <img src="<%= avatarUrl%>" alt="" class="" width="100" height="100"/> -->
+           <div class="am-form-group">
+                <a href="/uppic" class="" data-am-popover="{content: '点击可对头像进行修改', trigger: 'hover focus'}">
+                    <img src="<%= avatarUrl%>" alt="" class="am-circle" width="100" height="100"/>
+                </a><hr>
+                <div class="am-panel am-panel-default">
+                    <div class="am-panel-hd">
+                        <b>用户名：<%= username%></b>
+                        <small style="margin-left:40px">签名：<%= singna%></small>
+                    </div>
+                    <div class="am-panel-bd">
+                       <b>个人介绍： </b> <%= intro%>
+                    </div>
+                </div> 
+           </div>
+                
+            <div class="am-form-group">
+                <label for="singna" class=" am-form-label">签名</label>
+                <div class="">
+                    <input type="text" id="singna" name="singna" placeholder="输入签名">
+                </div>
+            </div>
+
+            <div class="am-form-group ">
+                <label for="sex" class="">性别：</label>
+                <div id="sex" class="">
+                    <input type="radio" name="sex" value="men" checked>男
+                    <input type="radio" name="sex" value="women">女
+                </div>
+            </div>
+
+            <div class="am-form-group ">
+                <label for="hobby" class="">爱好：</label>
+                <div id="hobby">
+                    <input type="checkbox" name="hobby" value="cf"> 吃饭
+                    <input type="checkbox" name="hobby" value="sj"> 睡觉
+                    <input type="checkbox" name="hobby" value="ddd"> 打豆豆
+                    <input type="checkbox" name="hobby" value="music"> 音乐
+                </div>
+            </div>
+
+
+            <div class="am-form-group">
+                <label for="intro">个人介绍</label>
+                <textarea class="" name="intro" rows="5" id="intro"></textarea>
+            </div>
+            <p><button type="button" id="button" class="am-btn am-btn-default">提交</button></p>
+
+            <div class="am-alert" id="success">
+                恭喜，用户信息修改成功！！
+            </div>
+            <div class="am-alert am-alert-warning" id="fail" data-am-alert>
+                密码错误!!
+            </div>
+    </form>
+
+        
+
+ <% include footer.ejs %>
+
+<script src="/js/jquery.js"></script>
+<script src="/js/amazeui.js"></script>
+<script src="/js/public.js"></script>
+<script>
+     $('input').focus(function(){
+        $('#success').css("display", "none");
+        $('#fail').css("display", "none");        
+    });
+
+  $('#button').click(function(){
+    var checked = [];          
+    $('#hobby > input:checkbox:checked').each(function() {  
+        checked.push($(this).val());  
+    });  
+
+
+      $.post('/doseeting',{
+          "singna":$('#singna').val(),
+          "sex":$('#sex input').val(),
+          "hobby":checked,
+          "intro":$('#intro').val()
+      },function(result){
+            if(result == '1'){
+                $('#success').fadeIn();
+                setTimeout(function(){
+                    window.location = '/setting';
+                },2000);
+            }else{
+                $('#fail').fadeIn();
+            }
+      });
+  });
+</script>
+
+</html>

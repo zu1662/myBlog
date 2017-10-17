@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>班级说说</title>
+
+    <link rel="stylesheet" href="/css/amazeui.css">
+    <link rel="stylesheet" href="/css/public.css">
+
+    <style>
+        .timeline {
+            margin: 30px 0;
+            margin-left: 100px;
+        }
+
+        .timeline-title {
+            font-size: 30px;
+            color: #aaa;
+        }
+
+        .timeline-main {
+            padding: 10px 20px;
+            margin-top: 0;
+            margin-left: 20px;
+            border-left: 1px solid #aaa;
+            list-style: none;
+        }
+
+        .timeline-time {
+            color: #aaa;
+            margin-right: 15px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <% include header.ejs %>
+        <div>
+            <img src="" alt="">
+        </div>
+
+        <div class="am-container " id="myContainer">
+            <div id="user" style="display:none"><%= user%></div>
+        </div>
+
+
+        <% include footer.ejs %>
+</body>
+<script src="/js/jquery.js"></script>
+<script src="/js/amazeui.js"></script>
+<script src="/js/public.js"></script>
+<script src="/js/underscore.js"></script>
+
+
+<script type="text/template" id="moban">
+    <div class="timeline">
+        <div class="timeline-title">{{= monthtime}}</div>
+        <ul class="timeline-main">
+            {{for(var i = 0;i< articles.length;i++){}} 
+                <li><i class="timeline-time">{{= articles[i].pubtime}}</i><a href="/articles/{{= articles[i]._id}}">{{= articles[i].title}}</a></li>
+            {{}}}
+        </ul>
+    </div>
+</script>
+
+
+<script>
+    window.onload = function () {
+        var user = $('#user').html();
+        //console.log(user);
+        getuseraticles(user);
+        function getuseraticles(user) {
+            var json = {};
+            var arr = [];
+            var flag =null;
+            $.ajax({
+                url: "/getuseraticles?user=" + user,
+                type: "get",
+                success: function (result) {
+                    console.log(result);
+                   
+                    //遍历结果，并按月份进行整理
+                    for (var i = 0; i < result.length; i++) {
+                        var monthTime = new Date(result[i].pubtime).format('yyyy年 MM月');
+                        //console.log(monthTime);
+                        if (monthTime == flag) {
+                            arr.push(result[i]);
+                            //console.log(arr);
+
+                             //如果是最后一个元素，则输出模板
+                             if(i == result.length-1){
+                                json={
+                                    "articles":arr,
+                                    "monthtime":flag
+                                }
+                                var compiled = _.template($("#moban").html());
+                                var relHtml = compiled(json);
+                                $('#myContainer').append($(relHtml));
+                            }
+                        } else {
+                           if(flag != null){
+                                json={
+                                    "articles":arr,
+                                    "monthtime":flag
+                                }
+                                var compiled = _.template($("#moban").html());
+                                var relHtml = compiled(json);
+                                $('#myContainer').append($(relHtml));
+                                flag = null;
+                                arr = [];
+                           }
+                           if(flag == null){
+                                arr.push(result[i]);
+                            }
+                            flag = monthTime;
+
+                            //如果是最后一个元素，则输出模板
+                            if(i == result.length-1){
+                                json={
+                                    "articles":arr,
+                                    "monthtime":flag
+                                }
+                                var compiled = _.template($("#moban").html());
+                                var relHtml = compiled(json);
+                                $('#myContainer').append($(relHtml));
+                            }
+                        }
+
+                    }
+                  
+                }            
+            });
+        }
+
+    }
+
+    //时间格式化函数
+    Date.prototype.format = function (fmt) { //author: meizz 
+        var o = {
+            "M+": this.getMonth() + 1, //月份 
+            "d+": this.getDate(), //日 
+            "h+": this.getHours(), //小时 
+            "m+": this.getMinutes(), //分 
+            "s+": this.getSeconds(), //秒 
+            "q+": Math.floor((this.getMonth() + 3) / 3), //季度 
+            "S": this.getMilliseconds() //毫秒 
+        };
+        if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+        for (var k in o)
+            if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+        return fmt;
+    }
+
+</script>
+
+</html>

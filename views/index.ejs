@@ -1,0 +1,208 @@
+<!doctype html>
+<html class="no-js">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>班级说说</title>
+
+    <link rel="stylesheet" href="/css/amazeui.css">
+    <link rel="stylesheet" href="/css/public.css">
+    <style>
+       .am-group{
+           padding: 20px;
+           border-bottom: 2px dashed #ccc;
+       }
+       .title h1{
+           margin-bottom: 0;
+       }
+       .meta{
+           margin-bottom: 0;
+       }
+       #intro{
+           padding-left:  100px;
+           padding-right: 100px;
+           text-align: left;
+           margin-bottom: 10px;
+       }
+       .img{
+        width: 700px;
+        margin-left: 100px;
+        margin-top: 30px;
+        box-shadow:0px 0px 30px 3px rgba(0,0,0,.4);
+        border-radius: 2px;
+       }
+       #more{
+            width: 20%;
+            transition: all .5s;
+            background-color: #fff;;
+            border:1px dashed #ccc;
+       }
+       #more:hover{
+           width: 30%;
+           background-color: #999;
+           border:1px dashed #666;  
+           color: white !important;
+       }
+       #pagebar li{
+            /* display: inline-block !important; */
+       }
+       .showauthor{
+           cursor: pointer;
+           color:#333333;
+       }
+    </style>
+</head>
+<body>
+
+<% include header.ejs %>
+<div>
+    <img src="" alt="">
+</div>
+
+<div class="am-container am-text-center" id="myContainer"></div>
+
+<div id="pagebar">
+    <ul class="am-pagination am-pagination-centered">
+        <li id="pre" class="am-disabled"><a href="#">&laquo;</a></li>
+
+        <li id="next"><a href="#">&raquo;</a></li>
+    </ul>
+</div>
+
+<% include footer.ejs %>
+</body>
+
+<script src="/js/jquery.js"></script>
+<script src="/js/amazeui.js"></script>
+<script src="js/public.js"></script>
+<script src="/js/zooming.js"></script>  
+<script src="/js/underscore.js"></script>  
+
+<script type="text/template" id="moban">
+    <div class="am-group">
+            <a class="title" href="/articles/{{= articleId}}"><h1>{{= title}}</h1></a> 
+            <div class="meta am-breadcrumb am-breadcrumb-slash">
+                <li>{{= pubtime}}</li>
+                <li><a class="showauthor" href="/users/{{= author}}"> {{= author}}</a></li>
+            </div>
+            <div class="intro" id="intro">
+                {{= intro}}
+            </div>
+            {{if(introImg != null){}}
+                <p class="img"><img src="/images/articles/intro-img/{{= introImg}}" alt="" data-action="zoom" width="700"></p>
+            {{}}}
+            <a href="/articles/{{= articleId}}"><button id="more" type="button" class="am-btn am-btn-default am-round">继续阅读</button></a>
+       </div>
+</script>
+
+<script type="text/template" id="pageMoban">
+    {{if(page < 6){}}
+        <li class="numbar"><a href="javascript:void(0);" data-page="{{= page}}">{{= page}}</a></li>
+    {{}else{}}
+        <li class="numbar" style="display:none"><a href="javascript:void(0);" data-page="{{= page}}">{{= page}}</a></li>
+    {{}}}
+</script>
+
+<script>
+    var pagesize = 3;
+
+     var compiled = _.template($("#moban").html());
+    getPage(1,pagesize);
+    //分页显示文章详情
+    function getPage(page,pagesize){
+        $.ajax({
+            url: "/getallaticles?pagesize="+ pagesize +"&page=" + page,
+            type: "get",
+            success: function (results) {
+               for(var i = 0;i<results.length;i++){
+                var json ={};
+                if(results[i].introImg){
+                    var introImg =results[i].introImg.substr(results[i].introImg.lastIndexOf('\\')+1);
+                    json = {
+                        "title":results[i].title,
+                        "pubtime":results[i].pubtime,
+                        "author":results[i].username,
+                        "intro":results[i].intro,
+                        "introImg":introImg,
+                        "articleId":results[i]._id
+                    };
+                }else{
+                    json = {
+                        "title":results[i].title,
+                        "pubtime":results[i].pubtime,
+                        "author":results[i].username,
+                        "intro":results[i].intro,
+                        "introImg":null,
+                        "articleId":results[i]._id
+                    };
+                }
+                    var relHtml = compiled(json);
+                    $('#myContainer').append($(relHtml));
+               }
+            }
+        });
+    }
+
+
+
+    var compiled2 = _.template($("#pageMoban").html());
+     getCount(pagesize);
+    //获取文章总数并生成分页按钮
+    function getCount(pagesize){
+        $.get('/getcount',function(result){
+            var pageNum = Math.ceil(parseInt(result) / pagesize);
+            for(var i = 1;i <= pageNum;i++){
+              var json = {"page":i};
+                var relHtml = compiled2(json);
+                $('#pagebar #next').before($(relHtml));
+            }
+
+            
+            $('.numbar').on('click',function(){
+                var page = $(this).index();
+                $('#myContainer').html('');
+                $(this).addClass("am-active").siblings().removeClass("am-active");
+                getPage(page,pagesize);
+            });
+
+             //进行分页按钮数目的控制
+             numbarSet(5);
+             //封装分页按钮页码函数
+            function numbarSet(numbarsize){
+                var nowpage = numbarsize;
+                $('#next').click(function(){ 
+                $('#pre').removeClass('am-disabled');
+                if(nowpage >= pageNum){
+                     nowpage = Math.ceil(pageNum / numbarsize) * numbarsize;
+                    $(this).addClass('am-disabled');
+                     return;
+                }
+                 $('.numbar').css('display','none');
+                 for(var i = nowpage;i<nowpage + numbarsize;i++){
+                     $($('.numbar')[i]).css('display','inline-block');
+                 }
+                 nowpage = nowpage+numbarsize;
+             });
+
+             $('#pre').click(function(){ 
+                $('#next').removeClass('am-disabled');
+                if(nowpage <= numbarsize){
+                    $('#pre').addClass('am-disabled');
+                     return;
+                }
+                 $('.numbar').css('display','none');
+                 for(var i = nowpage-numbarsize*2;i<nowpage-numbarsize;i++){
+                     $($('.numbar')[i]).css('display','inline-block');
+                 }
+                 nowpage = nowpage-numbarsize;
+             });
+            }
+        });
+    }
+
+   
+   
+
+</script>
+</html>

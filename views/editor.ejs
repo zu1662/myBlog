@@ -1,0 +1,117 @@
+<!doctype html>
+<html class="no-js">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>班级说说</title>
+
+    <link rel="stylesheet" href="/css/amazeui.css">
+    <link rel="stylesheet" href="/css/public.css">
+
+    <link rel="stylesheet" href="/css/simplemde.min.css" />
+    <link rel="stylesheet" href="/css/font-awesome.css" />
+    <link rel="stylesheet" href="/css/github-markdown.css" />
+    
+    <script src="/js/simplemde.min.js"></script>
+    <script src="/js/jquery.js"></script>
+    <script src="/js/amazeui.js"></script>
+    <script src="js/public.js"></script>
+
+    <style>
+        .CodeMirror, .CodeMirror-scroll {
+             min-height: 300px;
+        }
+        #editor{
+            margin-top: 20px;
+        }
+        #publish{
+            margin-top: 10px;
+        }
+        #a-intro{               
+            max-width: 1000px;
+            max-height: 100px;
+        }
+        #introBox{
+           margin-left: 0;
+        }
+    </style>
+</head>
+<body>
+    <% include header.ejs %>
+
+   <form class="am-container" id="editor" action="/dopublish" method="post" enctype="multipart/form-data">
+        <div class="am-form-group am-g">
+            <i class="am-u-sm-4"><b>文章标题：</b> <input type="text" class="am-form-field" id="a-title" name="title" placeholder="文章标题"></i>
+            <!-- <i class="am-u-sm-4 am-u-end"><b>作者：</b> <input type="text" class="am-form-field " id="a-author" name="author" placeholder="作者"></i> -->
+        </div>
+
+        <!-- <p><b>摘要导读：</b> <input type="text" class="am-form-field " id="a-intro" name="a-intro" placeholder="简介"></p> -->
+        <div class="am-form-group am-g" id="introBox">
+            <p><b>摘要导读：</b> </p>     
+            <textarea class="am-u-sm-8" cols="20" rows="5" id="a-intro" name="intro" placeholder="文章简介"></textarea> 
+            <div class="am-u-sm-4 ">
+                <input type="file" id="a-intro-img" name="introImg">
+                <p class="am-form-help">请选择要上传的图片...</p>
+            </div>
+        </div>    
+
+        <div class="am-form-group">
+            <textarea name="field" id="fieldTest" name="content" cols="30" rows="10"></textarea>
+        </div>
+        <button type="submit" id="publish" class="am-btn am-btn-default">发布文档</button>
+   </form>
+
+   <div class="am-alert" id="success" style="display :none">
+        文章发布成功！！
+    </div>
+    <div class="am-alert am-alert-warning" id="fail" style="display :none" data-am-alert>
+        文章发布失败!!
+    </div>
+
+    <% include footer.ejs %>
+</body>
+<script>
+    $(function(){
+
+        $('input').focus(function(){
+            $('#success').css("display", "none");
+            $('#fail').css("display", "none");        
+         });
+
+        var simplemde = new SimpleMDE({
+            element: document.getElementById("fieldTest"),
+            autoDownloadFontAwesome: true,
+            status: false
+        });
+
+        //在输出的地方加上markdown-body的css类即可
+        //下面的代码是给编辑器预览输出的容器加的。
+        $(".editor-preview-side").addClass("markdown-body");
+        
+        $('#publish').click(function(){
+            //输出MarkDown格式文本
+            var content = simplemde.value(); 
+
+            //输出转换为HTML格式的文本
+           //var  testMarkdown = simplemde.markdown(content);
+
+          // ajax提交表单
+            // $.post('/dopublish',{
+            //     "title":$('#a-title').val(),
+            //     "name": $('#a-name').val(),
+            //     "intro": $('#a-intro').val(),
+            //     "content":  content,
+
+            // },function(result){
+            //     if(result == '-1'){
+            //         //发布失败
+            //         $('#fail').fadeIn();
+            //     }
+            //     //发布成功
+            //     $('#success').fadeIn();
+            // });
+        });
+     });
+</script>
+</html>

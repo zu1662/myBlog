@@ -1,0 +1,82 @@
+<!doctype html>
+<html class="no-js">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>班级说说</title>
+
+    <link rel="stylesheet" href="/css/amazeui.css">
+    <link rel="stylesheet" href="/css/public.css">
+
+    <!-- <link rel="stylesheet" href="/css/simplemde.min.css" /> -->
+    <link rel="stylesheet" href="/css/github-markdown.css" />
+    
+ 
+
+    <style>
+        .markdown-body {
+            font-family: PingFang TC, Avenir Next, Helvetica, Arial, Hiragino Sans GB, Microsoft YaHei, sans-serif;
+            box-sizing: border-box;
+            min-width: 200px;
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 45px;
+        }
+        .am-article-bd{
+            line-height: 2;
+        }
+        img{
+            width: 100%;
+            margin: 25px 0;
+        }
+        .am-comment-avatar{
+            margin: 0;
+        }
+        @media (max-width: 767px) {
+            .markdown-body {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <% include header.ejs %>
+    <div class="am-container" id="mycontainer">
+        <div id="fieldBox" style="display:none"><%=field%></div>
+
+
+        <article class="am-article markdown-body">
+            <div class="am-article-hd">
+              <h1 class="am-article-title"><%=title%></h1>
+              <div class="meta am-breadcrumb am-breadcrumb-slash">
+                <li><%=pubtime%></li>
+                <li><a class="showauthor" href="/users/<%=author%>"> <%=author%></a></li>
+            </div>
+            </div>
+          
+            <div class="am-article-bd " id="field">
+              
+            </div>
+          </article>
+    </div>
+
+    <% include footer.ejs %>
+</body>
+<script src="/js/simplemde.min.js"></script>
+<script src="/js/jquery.js"></script>
+<script src="/js/amazeui.js"></script>
+<script src="/js/public.js"></script> 
+<script src="/js/Markdown.Converter.js"></script> 
+
+<script>
+   window.onload = function(){
+        var data = $('#fieldBox').html();
+       // console.log(data);
+        var converter = new showdown.Converter(); 
+        var html = converter.makeHtml(data);
+        //console.log(html);
+        $('#field').append(html);
+   }
+</script>
+</html>

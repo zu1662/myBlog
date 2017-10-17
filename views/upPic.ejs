@@ -1,0 +1,35 @@
+<!doctype html>
+<html class="no-js">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>班级说说</title>
+
+    <link rel="stylesheet" href="/css/amazeui.css">
+    <link rel="stylesheet" href="/css/public.css">
+
+    <script src="/js/jquery.js"></script>
+    <script src="/js/amazeui.js"></script>
+    <script src="js/public.js"></script>
+</head>
+<body>
+    <% include header.ejs %>
+
+<div class="am-container">
+    <form action="/doUpPic" method="post" enctype="multipart/form-data">
+        <div class="am-form-group">
+            <h4 class="am-form-help">请选择要修改的头像...</h4>
+            <input type="file" id="avatarFile" name="avatarFile">
+            <input type="submit" id="upFile"  value="上传">
+        </div>
+    </form>
+</div>
+
+
+
+<% include footer.ejs %>
+
+</body>
+
+</html>

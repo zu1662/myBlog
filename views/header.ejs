@@ -1,0 +1,63 @@
+<header id="header" class="am-topbar am-topbar-fixed-top wos-header" data-offset-bottom="">
+    <div class="am-container">
+        <h1 class="am-topbar-brand">
+            <a href="/">班级说说</a>
+        </h1>
+
+        <button class="am-topbar-btn am-topbar-toggle am-btn am-btn-sm am-btn-warning am-show-sm-only"
+                data-am-collapse="{target: '#collapse-head'}">
+            <span class="am-sr-only">导航切换</span>
+            <span class="am-icon-bars"></span>
+        </button>
+
+        <div class="am-collapse am-topbar-collapse" id="collapse-head">
+            <ul class="am-nav am-nav-pills am-topbar-nav">
+                <li <%if(active=="index"){%> class="am-active" <%}%>><a href="/">所有说说</a></li>
+                <li <%if(active=="myhome"){%> class="am-active" <%}%>><a href="/myhome">我的说说</a></li>
+            </ul>
+            <%  if(!login){  %>
+                <div class="am-topbar-right">
+                    <a href="/regist"><button class="am-btn am-btn-default am-topbar-btn am-btn-sm"><span class="am-icon-pencil"></span>注册</button></a>
+                </div>
+        
+                <div class="am-topbar-right">
+                    <a href="/login"> <button class="am-btn am-btn-danger am-topbar-btn am-btn-sm"><span class="am-icon-user"></span> 登录</button></a>
+                </div>
+             <%   }else{  %>
+                <div class="am-topbar-right">
+                    <ul class="am-nav am-nav-pills am-topbar-nav">
+                        <img src="<%= avatarUrl%>" alt="" class="am-comment-avatar" width="48" height="48"/>
+                        <li <%if(active=="setting"){%> class="am-active" <%}%>><a href="/setting">欢迎您！ <%= username%></a></li>
+                        <li <%if(active=="editor"){%> class="am-active" <%}%>><a href="/editor">发布文章</a></li>
+                        <li><a href="/logout" id="logout">注销账户</a></li>
+                    </ul>
+
+                </div>
+        <% } %>
+        </div>
+    </div>
+</header>
+
+<!-- 设置导航条自动隐藏-->
+<script>
+   
+        window.onscroll=function(){
+        //变量t就是滚动条滚动时，到顶部的距离
+	    var t =document.documentElement.scrollTop||document.body.scrollTop;
+        var header =document.getElementById("header");
+        if( t < 200) {     //当拖动到距离顶部100px处时，头部隐藏
+
+            header.style.position="fixed";     
+
+            header.style.top="0";
+
+        }else{
+
+            //恢复正常        
+            header.style.position="absolute";       
+
+            header.style.top="100px";
+        }
+    }
+
+</script>

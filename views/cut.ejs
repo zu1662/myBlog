@@ -1,0 +1,139 @@
+<!doctype html>
+<html class="no-js">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>班级说说</title>
+
+    <link rel="stylesheet" href="/css/amazeui.css">
+    <link rel="stylesheet" href="/css/public.css">
+    <link href="/css/jcrop-demo.css" rel="stylesheet" type="text/css" />
+	<link href="/css/jquery.Jcrop.min.css" rel="stylesheet" type="text/css" />
+    
+</head>
+<body>
+
+<header class="am-topbar am-topbar-fixed-top wos-header">
+    <div class="am-container">
+        <h1 class="am-topbar-brand">
+            <a href="/">班级说说</a>
+        </h1>
+
+        <button class="am-topbar-btn am-topbar-toggle am-btn am-btn-sm am-btn-warning am-show-sm-only"
+                data-am-collapse="{target: '#collapse-head'}">
+            <span class="am-sr-only">导航切换</span>
+            <span class="am-icon-bars"></span>
+        </button>
+
+        <div class="am-collapse am-topbar-collapse" id="collapse-head">
+            <ul class="am-nav am-nav-pills am-topbar-nav">
+                <li class="am-active"><a href="/">所有说说</a></li>
+                <li><a href="#">我的说说</a></li>
+            </ul>
+            <%  if(!login){  %>
+                <div class="am-topbar-right">
+                    <a href="/regist"><button class="am-btn am-btn-default am-topbar-btn am-btn-sm"><span class="am-icon-pencil"></span>注册</button></a>
+                </div>
+        
+                <div class="am-topbar-right">
+                    <a href="/login"> <button class="am-btn am-btn-danger am-topbar-btn am-btn-sm"><span class="am-icon-user"></span> 登录</button></a>
+                </div>
+             <%   }else{  %>
+                <div class="am-topbar-right">
+                    <ul class="am-nav am-nav-pills am-topbar-nav">
+                        <img src="<%= avatarUrl%>" alt="" class="am-comment-avatar" width="48" height="48"/>
+                        <li class="am-active"><a href="/">欢迎您！ <%= username%></a></li>
+                        <li><a href="/setting">设置个人信息</a></li>
+                        <li><a href="/logout" id="logout">注销账户</a></li>
+                    </ul>
+
+                </div>
+        <% } %>
+        </div>
+    </div>
+</header>
+
+<div class="am-container">
+     <div class="page-header">
+        <h1>Aspect Ratio with Preview Pane</h1>
+        </div>
+
+            <img src="/images/temp/<%=avatar%>" id="target" alt="[Jcrop Example]" height="400" />
+
+            <div id="preview-pane">
+            <div class="preview-container">
+                <img src="/images/temp/<%=avatar%>" class="jcrop-preview" alt="Preview" />
+            </div>
+         </div>
+    <input type="button" value="剪裁！！" id="btn">
+</div>
+
+<div data-am-widget="gotop" class="am-gotop am-gotop-fixed" >
+    <a href="#top" title="回到顶部">
+        <span class="am-gotop-title">回到顶部</span>
+        <i class="am-gotop-icon am-icon-chevron-up"></i>
+    </a>
+</div>
+
+
+<footer>
+    <div class="content">
+        <ul class="am-avg-sm-5 am-avg-md-5 am-avg-lg-5 am-thumbnails">
+            <li><a href="#">联系我们</a></li>
+            <li><a href="#">加入我们</a></li>
+            <li><a href="#">合作伙伴</a></li>
+            <li><a href="#">广告及服务</a></li>
+            <li><a href="#">友情链接</a></li>
+        </ul>
+        <p>Hua Zi 出品<br>© 2016 AllMobilize, Inc. Licensed under MIT license. Developed with WebStorm.</p>
+    </div>
+</footer>
+</body>
+<script src="/js/jquery.js"></script>
+<script src="/js/amazeui.js"></script>
+<script src="/js/public.js"></script>
+<script src="/js/cut.js"></script>    
+<script src="js/jquery.Jcrop.min.js"></script>
+<script type="text/javascript">
+    $(function(){
+             //获取图片原始尺寸
+    var screenImage = $("#target");
+
+    // Create new offscreen image to test
+    var theImage = new Image();
+    theImage.src = screenImage.attr("src");
+
+    // Get accurate measurements from that.
+    var imageWidth = theImage.width;
+    var imageHeight = theImage.height;
+    var imgScale = parseInt(imageHeight) / 400;
+    //console.log(imgScale);
+
+
+    $("input").click(function () {
+        var w = parseInt($(".jcrop-holder>div:first").css("width"));
+        var h = parseInt($(".jcrop-holder>div:first").css("height"));
+        var x = parseInt($(".jcrop-holder>div:first").css("left"));
+        var y = parseInt($(".jcrop-holder>div:first").css("top"));
+       
+        
+        //console.log(w,h,x,y);
+
+        $.get("/docut",{
+            "w" : w * imgScale,
+            "h" : h * imgScale,
+            "x" : x * imgScale,
+            "y" : y * imgScale
+        },function(result){
+            if(result == "1"){
+                alert('成功');
+                setTimeout(function(){
+                    window.location = "/setting";
+                },1000);
+            }
+        });
+    });
+    });
+</script>
+</html>
